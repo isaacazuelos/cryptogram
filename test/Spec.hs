@@ -1,2 +1,4 @@
-main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+import Test.Hspec
+import Test.QuickCheck
+
+main = hspec (return mempty)
