@@ -20,19 +20,19 @@ alphabet :: T.Text
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 spec = do
-  describe "The empty key" $ do
+  describe "empty" $ do
     it "should be all stars" $
-      Key.humanReadable Key.empty `shouldBe` "**************************"
+      Key.humanReadable Key.empty  `shouldBe` "**************************"
     it "should turn text applied to into stars" $
-      Key.apply Key.empty alphabet `shouldBe` alphabet
+      Key.apply Key.empty alphabet `shouldBe` "**************************"
 
-  describe "The identity" $ do
+  describe "identity" $ do
     it "should be the alphabet" $
       Key.humanReadable Key.identity `shouldBe` alphabet
     it "should be the identity for `apply`" $
       property $ \t -> Key.apply Key.identity t == t
 
-  describe "Key.generateRandom" $ do
+  describe "generateRandom" $ do
     it "should generate a random filled key" $ do
       key <- Key.generateRandom
       T.unpack (Key.humanReadable key) `shouldNotContain` ['*']
@@ -42,7 +42,7 @@ spec = do
       -- while technically possible, the odds are not it its favour
       key1 `shouldNotBe` key2
 
-  describe "Key.parse" $ do
+  describe "parse" $ do
     it "should parse the alphabet correctly" $
       Key.humanReadable <$> Key.parse alphabet `shouldBe` Just alphabet
     it "should require the correct lenght" $ do
@@ -56,7 +56,7 @@ spec = do
       Key.parse "***********a**************" `shouldBe` Nothing
       Key.parse "*******#***********A******" `shouldBe` Nothing
 
-  describe "Key.apply" $ do
+  describe "apply" $ do
     let pt = "TEST MESSAGE"
     let ct = "JNZJ PNZZHMN"
     let (Just k) = Key.parse "HGDCNXMULWETPYRAQVZJSKIBFO"
@@ -70,7 +70,7 @@ spec = do
       let ct' = "tNZJ-PNZZHMN!"
       Key.apply k pt' `shouldBe` ct'
 
-  describe "Key.insert" $ do
+  describe "insert" $ do
     it "should do nothing when inserting empty strings" $ do
       key <- Key.generateRandom
       Key.insert key "" "" `shouldBe` Just key
@@ -79,14 +79,16 @@ spec = do
       Key.insert Key.empty "jkl;" "" `shouldBe` Nothing
     let intoEmpty = Key.insert Key.empty
     it "should handle invalid characters" $ do
-      intoEmpty "a_a" "bbb" `shouldBe` Nothing
-      intoEmpty "a_a" "b_b" `shouldBe` Key.parse "b*************************"
+      intoEmpty "A_A" "BBB" `shouldBe` Nothing
+      intoEmpty "A_A" "B_B" `shouldBe` Key.parse "B*************************"
     it "should build keys out properly" $ do
-      intoEmpty "ab"  "bc"  `shouldBe` Key.parse "bc************************"
-      intoEmpty "aba" "bcb" `shouldBe` Key.parse "bc************************"
+      intoEmpty "AB"  "BC"  `shouldBe` Key.parse "BC************************"
+      intoEmpty "ABA" "BCB" `shouldBe` Key.parse "BC************************"
     it "should detect conflicts in the messages" $ do
-      intoEmpty "aba" "bcd" `shouldBe` Nothing
-      intoEmpty "aaa" "bcb" `shouldBe` Nothing
-    let (Just key) = Key.parse "b*************************"
+      intoEmpty "ABA" "BCD" `shouldBe` Nothing
+      intoEmpty "AAA" "BCB" `shouldBe` Nothing
+    let (Just key) = Key.parse "B*************************"
     it "should detect conflicts with the key" $
-      Key.insert key "a" "c" `shouldBe` Nothing
+      Key.insert key "A" "C" `shouldBe` Nothing
+
+  -- TODO: write tests for `solves` and `inverse`

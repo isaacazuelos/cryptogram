@@ -17,28 +17,29 @@ module Toy.Cryptogram.Key
     ( Key
     , empty
     , identity
-    , solves
-    , insert
+    , inverse
     , apply
     , parse
+    , solves
+    , insert
     , humanReadable
     , generateRandom
     )
   where
 
-import           Prelude              hiding (lookup)
+import           Prelude       hiding (lookup)
 
-import           Control.Monad        (ap)
-import           Data.Char            (chr, isAsciiUpper, ord)
-import           Data.Maybe           (fromJust, fromMaybe, isJust)
-import           Data.Ord             (comparing)
-import           System.Random        (newStdGen, randoms)
+import           Control.Monad (ap, when)
+import           Data.Char     (chr, isAsciiUpper, ord)
+import           Data.Maybe    (fromJust, fromMaybe, isJust)
+import           Data.Ord      (comparing)
+import           System.Random (newStdGen, randoms)
 
-import qualified Data.List            as List
-import qualified Data.Map             as Map
-import qualified Data.Set             as Set
-import qualified Data.Text            as Text
-import qualified Data.Vector          as Vector
+import qualified Data.List     as List
+import qualified Data.Map      as Map
+import qualified Data.Set      as Set
+import qualified Data.Text     as Text
+import qualified Data.Vector   as Vector
 
 -- | A key is a mapping of the letters in the plaintext to the letters in the
 -- cyphertext.
@@ -87,7 +88,7 @@ inverse k = undefined
 generateRandom :: IO Key
 generateRandom = ( Key
                  . Vector.fromList
-                 . map (chr . (ord 'a' +))
+                 . map (chr . (ord 'A' +))
                  . take 26
                  . List.nub
                  . map (`mod` 26)
@@ -100,44 +101,61 @@ generateRandom = ( Key
 --   prettify <$> parse == return
 -- @
 parse :: Text.Text -> Maybe Key
-parse t = undefined
+parse t
+    | Text.length t   /= 26     = Nothing
+    | List.nub knowns /= knowns = Nothing
+    | Text.any (not . isValidChar) t = Nothing
+    | otherwise = Just . Key . Vector.fromList $ str
+  where str = Text.unpack t
+        knowns = filter (/= '*') str
+        isValidChar c = isAsciiUpper c || c == '*'
 
--- | Look up a plaintext character to know what it maps to. Only @isAsciiUpper@
--- characters will return answers, and the only other @isAsciiUpper@s.
-lookup :: Key -> Char -> Maybe Char
-lookup (Key v) c = undefined
-
--- | Set a letter to map to another in a key. Note that this doesn't check if
--- the mapping to set makes sense. That's why this isn't to be exposed!
-set :: Key -> Char -> Char -> Key
-set (Key v) f t = undefined
+-- | Look up a plaintext character to know what it maps to.
+lookup :: Key -> Char -> Char
+lookup (Key v) c
+  | isAsciiUpper c = v Vector.! indexBy c
+  | c == '*' = '*'
+  | otherwise = c
 
 -- | The zero-based index of the character in the alphabet.
 indexBy :: Char -> Int
-indexBy c = ord c - ord 'a'
+indexBy c = ord c - ord 'A'
 
 -- | Insert the swaps implied by a word-to-word mapping into a key, returning
 -- Nothing if a conflict arises.
 insert :: Key -> Text.Text -> Text.Text -> Maybe Key
-insert k pt ct = foldr ((=<<) . insertSwap) (Just k) (swaps ct pt)
+insert k pt ct
+  | Text.length ct /= Text.length pt = Nothing
+  | otherwise = foldr ((=<<) . insertSwap) (Just k) (swaps pt ct)
 
 -- | A swap is the mapping of one character to another.
 type Swap = (Char, Char) -- (PT, CT)
 
--- | Returns a list of the swaps implied by mapping some Cyphertext into some
--- plaintext. Swaps that are mutually exclusive can appear.
+-- | Returns a list of the swaps implied by mapping some cyphertext into some
+-- plaintext. Swaps that are mutually exclusive can appear, but invalid
+-- characters won't appear.
 swaps :: Text.Text -> Text.Text -> [Swap]
-swaps ct pt = zip (Text.unpack ct) (Text.unpack pt)
+swaps ct pt = zip (Text.unpack ct)
+                  (Text.unpack pt)
 
 -- | Inserts a single swap into a key, if it wouldn't cause a problem.
 --
 -- We can only insert a swap into the key if:
 --
+-- 0. Both letters from and to are valid mappings.
 -- 1. The letter being mapped from isn't alrady set **to something else**.
 -- 2. The letter being mapped to isn't alreay mapped to.
 insertSwap :: Swap -> Key -> Maybe Key
-insertSwap (f, t) k = undefined
+insertSwap (f, t) k
+    -- neither letter is valid, so don't change key
+    | not (isAsciiUpper f) && not (isAsciiUpper t) = return k
+    -- only one letter is valid, so key is invalid.
+    | not (isAsciiUpper f) &&      isAsciiUpper t  = Nothing
+    |      isAsciiUpper f  && not (isAsciiUpper f) = Nothing
+    | lookup k f `notElem` ['*', t]                = Nothing
+    | otherwise                                    = return k'
+  where k' = let (Key v) = k in Key (v Vector.// [(indexBy f, t)])
 
 -- | Apply a key to some text
 apply :: Key -> Text.Text -> Text.Text
-apply k t = undefined
+apply = Text.map . lookup
