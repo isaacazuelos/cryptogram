@@ -1,0 +1,3 @@
+module Toy.Cryptogram
+  ()
+where
