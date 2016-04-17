@@ -19,7 +19,7 @@ instance Arbitrary T.Text where
 alphabet :: T.Text
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-spec = do
+spec = describe "Key" $ do
   describe "empty" $ do
     it "should be all stars" $
       Key.humanReadable Key.empty  `shouldBe` "**************************"
