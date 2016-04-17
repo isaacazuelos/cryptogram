@@ -91,4 +91,16 @@ spec = do
     it "should detect conflicts with the key" $
       Key.insert key "A" "C" `shouldBe` Nothing
 
-  -- TODO: write tests for `solves` and `inverse`
+  describe "solves" $ do
+    it "should know when a total key solves any text" $
+      property $ Key.solves Key.identity
+    let (Just key) = Key.parse "***DEFGHIJKLMNOPQRSTUVWXYZ"
+    it "should know when a partial key doesn't solve some text" $
+      "XYZ" `shouldSatisfy` Key.solves key
+    it "should knwo when a partial key does solve some text" $
+      "ABCXYZ" `shouldSatisfy` Key.solves key
+    it "should handle invalid characters" $
+      "W*X-Y'Z" `shouldSatisfy` Key.solves key
+
+  describe "inverse" $
+    return mempty
