@@ -1,4 +1,6 @@
 import Test.Hspec
-import Test.QuickCheck
 
-main = hspec (return mempty)
+import qualified KeySpec
+
+main :: IO ()
+main = hspec $ describe "Toy.Cryptogram" KeySpec.spec
