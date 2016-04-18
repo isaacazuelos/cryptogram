@@ -107,13 +107,16 @@ spec = do
     it "should do nothing to the empty key" $
       Key.inverse Key.empty `shouldBe` Key.empty
     it "should produce an inverse of total keys" $ do
-      let Just shiftRight3 = Key.parse "*EFGHIJKLMNOPQRSTUVWXYZABC"
-      let Just shiftLeft3  = Key.parse "XYZ*BCDEFGHIJKLMNOPQRSTUVW"
-      Key.inverse shiftLeft3 `shouldBe` Key.inverse shiftRight3
+      let Just shiftRight3 = Key.parse "DEFGHIJKLMNOPQRSTUVWXYZABC"
+      let Just shiftLeft3  = Key.parse "XYZABCDEFGHIJKLMNOPQRSTUVW"
+      Key.inverse shiftLeft3 `shouldBe` shiftRight3
+      Key.inverse shiftRight3 `shouldBe` shiftLeft3
+      True `shouldBe` True
     it "should produce an inverse of partial keys" $ do
-      let Just key1 = Key.parse "*EFGHIJKLMNOPQRSTUVWXYZABC"
-      let Just key2 = Key.parse "XYZABCDEFGHIJKLMNOPQRSTUVW"
-      Key.inverse key1 `shouldBe` Key.inverse key2
+      let Just key1 = Key.parse "BCA***********************"
+      let Just key2 = Key.parse "CAB***********************"
+      Key.inverse key1 `shouldBe` key2
+      Key.inverse key2 `shouldBe` key1
     it "applied twice should do nothing to total keys" $ do
       key <- Key.generateRandom
       Key.inverse (Key.inverse key) `shouldBe` key
