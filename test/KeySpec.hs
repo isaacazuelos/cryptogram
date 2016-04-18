@@ -95,9 +95,9 @@ spec = do
       property $ Key.solves Key.identity
     let (Just key) = Key.parse "***DEFGHIJKLMNOPQRSTUVWXYZ"
     it "should know when a partial key doesn't solve some text" $
+      "ABC" `shouldNotSatisfy` Key.solves key
+    it "should know when a partial key does solve some text" $
       "XYZ" `shouldSatisfy` Key.solves key
-    it "should knwo when a partial key does solve some text" $
-      "ABCXYZ" `shouldSatisfy` Key.solves key
     it "should handle invalid characters" $
       "W*X-Y'Z" `shouldSatisfy` Key.solves key
 

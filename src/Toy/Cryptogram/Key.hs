@@ -71,7 +71,7 @@ identity = Key (Vector.fromList ['A'..'Z'])
 -- | Text is solved by a key when there are no letters in the text which
 -- unknown in the key.
 solves :: Key -> Text.Text -> Bool
-solves t k = undefined
+solves k t = Text.all ((/=) '*' . lookup k) (Text.filter isAsciiUpper t)
 
 -- | The inverse of a key is an inverse in the usual mathematical sense.
 --
