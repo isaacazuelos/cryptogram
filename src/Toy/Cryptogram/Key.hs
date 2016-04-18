@@ -71,17 +71,15 @@ identity = Key (Vector.fromList ['A'..'Z'])
 -- | Text is solved by a key when there are no letters in the text which
 -- unknown in the key.
 solves :: Key -> Text.Text -> Bool
-solves t k = undefined
+solves k t = Text.all ((/=) '*' . lookup k) (Text.filter isAsciiUpper t)
 
 -- | The inverse of a key is an inverse in the usual mathematical sense.
---
--- @
---   encrypt key === decrypt (inverse key)
---   decrypt key === encrypt (inverse key)
---   (inverse . inverse) === id
--- @
 inverse :: Key -> Key
-inverse k = undefined
+inverse (Key v) = foldr (uncurry (flip insertSwap')) empty (action v)
+  where
+    action = filter ((/=) '*' . snd)
+           . zip "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+           . Vector.toList
 
 -- | Generates a random key. There are never any unknown letters in the
 -- generated key, i.e. the key is @complete@
@@ -153,8 +151,12 @@ insertSwap (f, t) k
     | not (isAsciiUpper f) &&      isAsciiUpper t  = Nothing
     |      isAsciiUpper f  && not (isAsciiUpper f) = Nothing
     | lookup k f `notElem` ['*', t]                = Nothing
-    | otherwise                                    = return k'
-  where k' = let (Key v) = k in Key (v Vector.// [(indexBy f, t)])
+    -- things are fine, so force the insertion
+    | otherwise = return $ insertSwap' f t k
+
+-- | Forces the insertion of a swap into a key, explodes on failure.
+insertSwap' :: Char -> Char -> Key -> Key
+insertSwap' f t (Key v) = Key (v Vector.// [(indexBy f, t)])
 
 -- | Apply a key to some text
 apply :: Key -> Text.Text -> Text.Text
