@@ -33,6 +33,20 @@ invalids :: [T.Text]
 invalids = ["HE'LL", "*#^&%*^%&(^%)", "mostly-valid"]
 
 spec = do
+  describe "fingerprint" $ do
+    it "should properly identify like fingerprints" $ do
+      Dict.fingerprint "AAA" `shouldBe` Dict.fingerprint "AAA"
+      Dict.fingerprint "AAA" `shouldBe` Dict.fingerprint "BBB"
+      Dict.fingerprint "A-A" `shouldBe` Nothing
+      Dict.fingerprint "A-A" `shouldBe` Dict.fingerprint "B-B"
+    it "should properly identify unalike fingerprints" $ do
+      Dict.fingerprint "AZA" `shouldNotBe` Dict.fingerprint "AAA"
+      Dict.fingerprint "AAA" `shouldNotBe` Dict.fingerprint "ABA"
+      Dict.fingerprint "A-A" `shouldBe` Nothing
+    it "should be case sensitive" $ do
+      Dict.fingerprint "aaa" `shouldNotBe` Dict.fingerprint "AAA"
+      Dict.fingerprint "AAA" `shouldNotBe` Dict.fingerprint "aaa"
+
   describe "withWords and toWords" $ do
     it "build dictionaries with words" $ do
       Dict.toWords (Dict.fromWords []) `shouldBe` []
@@ -50,20 +64,6 @@ spec = do
     it "should contain no words" $ do
       Dict.toWords Dict.empty `shouldBe` []
       Dict.fromWords [] `shouldBe` Dict.empty
-
-  describe "fingerprint" $ do
-    it "should properly identify like fingerprints" $ do
-      Dict.fingerprint "AAA" `shouldBe` Dict.fingerprint "AAA"
-      Dict.fingerprint "AAA" `shouldBe` Dict.fingerprint "BBB"
-      Dict.fingerprint "A-A" `shouldBe` Nothing
-      Dict.fingerprint "A-A" `shouldBe` Dict.fingerprint "B-B"
-    it "should properly identify unalike fingerprints" $ do
-      Dict.fingerprint "AZA" `shouldBe` Dict.fingerprint "AAA"
-      Dict.fingerprint "AAA" `shouldNotBe` Dict.fingerprint "ABA"
-      Dict.fingerprint "A-A" `shouldBe` Nothing
-    it "should be case sensitive" $ do
-      Dict.fingerprint "aaa" `shouldNotBe` Dict.fingerprint "AAA"
-      Dict.fingerprint "AAA" `shouldNotBe` Dict.fingerprint "aaa"
 
   describe "lookup" $ do
     let dict = Dict.fromWords words

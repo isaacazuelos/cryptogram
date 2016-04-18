@@ -16,9 +16,13 @@ module Toy.Cryptogram.Dictionary
     )
   where
 
-import Prelude hiding (lookup)
+import           Prelude     hiding (lookup)
 
-import qualified Data.Text as Text
+import Data.Maybe (fromJust)
+
+import qualified Data.Char   as Char
+import qualified Data.Text   as Text
+import qualified Data.Vector as Vector
 
 -- | The default dictionary location.
 defaultPath :: FilePath
@@ -47,7 +51,17 @@ fromWords ws = undefined
 toWords :: Dictionary -> [Text.Text]
 toWords d = undefined
 
-newtype Fingerprint = FP () deriving (Show, Eq)
+-- | Fingerprints are just a vector where each character is mapped to the index
+-- of it's first appearence.
+newtype Fingerprint = FP (Vector.Vector Int) deriving (Show, Eq, Ord)
 
-fingerprint :: Text.Text -> Maybe Fingerprint
-fingerprint t = undefined
+-- | Each word has a fingerprint, but they're not all unique. Two words which
+-- can be made the same by the applicaiton of some key have the same
+-- fingerprint.
+-- fingerprint :: Text.Text -> Maybe Fingerprint
+fingerprint t = FP <$> Vector.foldr ((=<<) . appendCharIndex chars) (Just mempty) chars
+  where
+    chars = Vector.fromList (Text.unpack t)
+    appendCharIndex chars c v
+      | Char.isAsciiUpper c = flip Vector.cons v <$> Vector.elemIndex c chars
+      | otherwise = Nothing
