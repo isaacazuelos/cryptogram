@@ -6,5 +6,5 @@ import qualified DictionarySpec
 main :: IO ()
 main = hspec $
   describe "Toy.Cryptogram" $ do
-   KeySpec.spec
-   DictionarySpec.spec
+   describe "Key" KeySpec.spec
+   describe "Dictionary" DictionarySpec.spec
