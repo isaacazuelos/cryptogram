@@ -27,7 +27,14 @@ This includes development stuff like dependency fetching and test running.
 
 ## Usage
 
-There isn't enough implemented to write out how to use this yet.
+    Usage: cryptogram [-e|--encrypt] [-k|--key ARG] MESSAGE
+
+To encrypt some text, pass the message in with the `--encrypt` flag set,
+otherwise decryption is assumed.
+
+A key can be specified. When encrypting without a key, one is randomly
+generated. Decryption without a key is currently not possible, but it's
+planned.
 
 ## Resources
 
