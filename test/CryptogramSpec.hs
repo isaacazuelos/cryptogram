@@ -37,5 +37,7 @@ spec =
       Crypto.encrypt key alphabet `shouldBe` "***DEFGHIJKLMNOPQRSTUVWXYZ"
       Crypto.decrypt key alphabet `shouldBe` "***DEFGHIJKLMNOPQRSTUVWXYZ"
     it "should undo each other" $ do
+      -- I'd rather use Key.generateRandom, but I can't get IO to work
+      -- nicely with quickcheck
       let Just key = Key.parse "WCLTJNXYPSEFQIHMDUKAOBVZRG"
       property $ \t -> Crypto.decrypt key (Crypto.encrypt key t) `shouldBe` t
