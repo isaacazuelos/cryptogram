@@ -18,6 +18,7 @@ library
   exposed-modules:     Toy.Cryptogram
                      , Toy.Cryptogram.Key
                      , Toy.Cryptogram.Dictionary
+                     , Toy.Cryptogram.Solver
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , random
@@ -39,7 +40,10 @@ test-suite test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       KeySpec, DictionarySpec, CryptogramSpec
+  other-modules:       KeySpec
+                     , DictionarySpec
+                     , CryptogramSpec
+                     , SolverSpec
   build-depends:       base
                      , cryptogram
                      , text
