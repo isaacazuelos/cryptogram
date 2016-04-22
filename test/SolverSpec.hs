@@ -27,10 +27,10 @@ spec = do
   describe "expandKey" $ do
     it "should only allow usable words to expand a key" $ do
       let dict = Dict.fromWords ["A", "B", "HI", "MY"]
-      Solver.expandKey dict Key.empty "A" `shouldNotBe` []
-      Solver.expandKey dict Key.empty "a" `shouldNotBe` []
+      Solver.expandKey dict Key.empty "A"  `shouldNotBe` []
       Solver.expandKey dict Key.empty "AB" `shouldNotBe` []
-      Solver.expandKey dict Key.empty "_+" `shouldNotBe` []
+      Solver.expandKey dict Key.empty "a"  `shouldBe` []
+      Solver.expandKey dict Key.empty "_+" `shouldBe` []
     it "should expand a key based on what it could map to" $ do
       let dict = Dict.fromWords ["MY", "PI"]
       Solver.expandKey dict Key.empty "AB" `shouldMatchList`
@@ -70,4 +70,4 @@ spec = do
     it "should detect when a word rules out a key" $ do
       let text = "ISAAC FAIL"
       let dict = Dict.fromWords ["HELLO", "SPEED", "NOPE", "NOTTHISONE"]
-      Solver.solutions dict text `shouldBe` []
+      Solver.solutions dict text `shouldBe` []  
