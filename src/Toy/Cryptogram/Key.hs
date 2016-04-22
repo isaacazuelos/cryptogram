@@ -144,15 +144,20 @@ swaps ct pt = zip (Text.unpack ct)
 -- 1. The letter being mapped from isn't alrady set **to something else**.
 -- 2. The letter being mapped to isn't alreay mapped to.
 insertSwap :: Swap -> Key -> Maybe Key
-insertSwap (f, t) k
+insertSwap (f, t) k@(Key v)
     -- neither letter is valid, so don't change key
     | not (isAsciiUpper f) && not (isAsciiUpper t) = return k
     -- only one letter is valid, so key is invalid.
     | not (isAsciiUpper f) &&      isAsciiUpper t  = Nothing
     |      isAsciiUpper f  && not (isAsciiUpper f) = Nothing
-    | lookup k f `notElem` ['*', t]                = Nothing
-    -- things are fine, so force the insertion
-    | otherwise = return $ insertSwap' f t k
+    -- That letter is alreay mapped to that target
+    | lookup k f == t                              = return k
+    -- That letter is alreay mapped to something else
+    | isAsciiUpper (lookup k f)                    = Nothing
+    -- The letter is mapped to by something else
+    | t `Vector.elem` v                            = Nothing
+    -- insert the swap
+    | lookup k f == '*'                            = return $ insertSwap' f t k
 
 -- | Forces the insertion of a swap into a key, explodes on failure.
 insertSwap' :: Char -> Char -> Key -> Key
