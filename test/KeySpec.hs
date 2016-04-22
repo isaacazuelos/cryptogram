@@ -87,9 +87,10 @@ spec = do
     it "should detect conflicts in the messages" $ do
       intoEmpty "ABA" "BCD" `shouldBe` Nothing
       intoEmpty "AAA" "BCB" `shouldBe` Nothing
-    let (Just key) = Key.parse "B*************************"
-    it "should detect conflicts with the key" $
+    it "should detect conflicts with the key" $ do
+      let (Just key) = Key.parse "B*************************"
       Key.insert key "A" "C" `shouldBe` Nothing
+      Key.insert key "Z" "B" `shouldBe` Nothing
 
   describe "solves" $ do
     it "should know when a total key solves any text" $
