@@ -8,6 +8,7 @@
 
 module Toy.Cryptogram.Dictionary
     ( Dictionary (Dictionary)
+    , defaultPath
     , empty
     , fromWords
     , toWords
@@ -37,6 +38,7 @@ data Dictionary = Dictionary (Map.Map Fingerprint [Text.Text]) deriving (Eq)
 instance Show Dictionary where
   show = (++) "toWords " . show . toWords
 
+-- | An empty dictionary containing no words.
 empty :: Dictionary
 empty = Dictionary mempty
 
