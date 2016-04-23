@@ -65,7 +65,7 @@ encryptWithRandomKey msg = do
 
 decryptBySolving :: Options -> IO ()
 decryptBySolving opts = do
-  let path = fromMaybe "/usr/share/dict/words" (dictPath opts)
+  let path = fromMaybe Dictionary.defaultPath (dictPath opts)
   text <- readFile path
   let dict = ( Dictionary.fromWords
              . filter Solver.usable
@@ -76,6 +76,6 @@ decryptBySolving opts = do
   mapM_ (printSolution (message opts)) sol
 
 printSolution :: Text.Text -> Key.Key -> IO ()
-printSolution ct k = putStrLn
-                   $ "key: "      <> Key.humanReadable k <>
-                     " message: " <> Key.apply (Key.inverse k) ct
+printSolution ct key = putStrLn
+                   $ "key: "      <> Key.humanReadable  key <>
+                     " message: " <> Cryptogram.decrypt key ct
