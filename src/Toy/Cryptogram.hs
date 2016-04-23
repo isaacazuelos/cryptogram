@@ -20,8 +20,10 @@ module Toy.Cryptogram
 import qualified Data.Text as Text
 import qualified Toy.Cryptogram.Key as Key
 
+-- | Encrypt some plaintext using a known key.
 encrypt :: Key.Key -> Text.Text -> Text.Text
 encrypt = Key.apply
 
+-- | Decrypt some cyphertext uisng a known key.
 decrypt :: Key.Key -> Text.Text -> Text.Text
 decrypt = Key.apply . Key.inverse
