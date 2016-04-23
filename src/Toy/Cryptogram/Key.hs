@@ -29,15 +29,10 @@ module Toy.Cryptogram.Key
 
 import           Prelude       hiding (lookup)
 
-import           Control.Monad (ap, when)
 import           Data.Char     (chr, isAsciiUpper, ord)
-import           Data.Maybe    (fromJust, fromMaybe, isJust)
-import           Data.Ord      (comparing)
 import           System.Random (newStdGen, randoms)
 
 import qualified Data.List     as List
-import qualified Data.Map      as Map
-import qualified Data.Set      as Set
 import qualified Data.Text     as Text
 import qualified Data.Vector   as Vector
 
@@ -150,9 +145,16 @@ insertSwap (f, t) k
     -- only one letter is valid, so key is invalid.
     | not (isAsciiUpper f) &&      isAsciiUpper t  = Nothing
     |      isAsciiUpper f  && not (isAsciiUpper f) = Nothing
-    | lookup k f `notElem` ['*', t]                = Nothing
-    -- things are fine, so force the insertion
-    | otherwise = return $ insertSwap' f t k
+    -- That letter is alreay mapped to that target
+    | lookup k f == t                              = return k
+    -- That letter is alreay mapped to something else
+    | isAsciiUpper (lookup k f)                    = Nothing
+    -- The letter is mapped to by something else
+    | let (Key v) = k in t `Vector.elem` v         = Nothing
+    -- insert the swap
+    | lookup k f == '*'                            = return $ insertSwap' f t k
+    -- Anything else is a mistake.
+    | otherwise                                    = Nothing
 
 -- | Forces the insertion of a swap into a key, explodes on failure.
 insertSwap' :: Char -> Char -> Key -> Key
