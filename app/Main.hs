@@ -13,6 +13,7 @@ import           Prelude                   hiding (putStrLn, readFile)
 import           Options.Applicative
 
 import           Data.Maybe                (fromMaybe)
+import           Data.Monoid               ((<>))
 import           Data.Text.IO              (putStrLn, readFile)
 import           System.Exit               (exitSuccess)
 

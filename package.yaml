@@ -1,0 +1,53 @@
+name: cryptogram
+version: '0.2.0.2'
+synopsis: A cryptogram solver
+description: Please see README.md
+category: Toy
+author: Isaac Azuelos
+maintainer: isaac@azuelos.ca
+copyright: 2016 Isaac Azuelos
+license: MIT
+github: isaacazuelos/cryptograms
+homepage: http://github.com/isaacazuelos/cryptogram#readme
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Toy.Cryptogram
+  - Toy.Cryptogram.Key
+  - Toy.Cryptogram.Dictionary
+  - Toy.Cryptogram.Solver
+  dependencies:
+  - base >=4.7 && <5
+  - containers >=0.5 && <1.0
+  - random >=1.1 && <2.0
+  - text >=1.2 && <2.0
+  - vector >=0.11 && <1.0
+executables:
+  cryptogram:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    dependencies:
+    - base
+    - cryptogram >=0.2
+    - text >=1.2 && <2.0
+    - optparse-applicative >=0.12 && <1.0
+tests:
+  test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - cryptogram
+    - text
+    - hspec
+    - QuickCheck

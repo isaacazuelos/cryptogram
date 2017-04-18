@@ -1,1 +1,4 @@
 .stack-work
+
+# use hpack to generate it
+cryptogram.cabal
