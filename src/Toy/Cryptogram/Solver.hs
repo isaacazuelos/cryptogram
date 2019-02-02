@@ -31,7 +31,7 @@ solutions dict ct = go (filter usable (Text.words ct)) Key.empty
 usable :: Text.Text -> Bool
 usable = Text.all Char.isAsciiUpper
 
--- | Exapdn a key using the candidates for a cypher-word in a dictionary
+-- | Expand a key using the candidates for a cypher-word in a dictionary
 expandKey :: Dict.Dictionary -> Key.Key -> Text.Text -> [Key.Key]
 expandKey d k w =
   if usable w

@@ -1,11 +1,11 @@
 name: cryptogram
-version: '0.2.0.2'
+version: '0.2.0.3'
 synopsis: A cryptogram solver
 description: Please see README.md
 category: Toy
 author: Isaac Azuelos
 maintainer: isaac@azuelos.ca
-copyright: 2016 Isaac Azuelos
+copyright: 2019 Isaac Azuelos
 license: MIT
 github: isaacazuelos/cryptograms
 homepage: http://github.com/isaacazuelos/cryptogram#readme
